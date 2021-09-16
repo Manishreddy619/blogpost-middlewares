@@ -14,7 +14,7 @@ export const unauther = (err, req, res, next) => {
 };
 
 export const notfound = (err, req, res, next) => {
-	console.log(err);
+	console.log('err', err);
 	if (err.status === 404) {
 		res.status(404).send({ status: 'failed', message: err.message });
 	} else {
@@ -29,6 +29,7 @@ export const forbiden = (err, req, res, next) => {
 	}
 };
 export const serverside = (err, req, res, next) => {
+	console.log(err);
 	if (err.status === 500) {
 		res.status(500).send('server error');
 	} else {

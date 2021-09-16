@@ -8,10 +8,14 @@ import {
 	forbiden,
 	unauther,
 } from './errorhandlers.js';
+import { join } from 'path';
 const server = express();
 const port = 3002;
 
+const publicFolderPath = join(process.cwd(), 'public');
+console.log(publicFolderPath);
 ///////////////global middle wares
+server.use(express.static(publicFolderPath));
 server.use(cors());
 server.use(express.json());
 
