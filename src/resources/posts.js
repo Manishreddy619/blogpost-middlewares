@@ -23,43 +23,67 @@ const writeBlogPosts = (content) => writeJSON(postjsonpath, content);
 const savepostpicture = (name, contentasbuffer) =>
 	writeFile(join(publicFolderPath, name), contentasbuffer);
 ///////////////////post blog posts
-postsRouter.post('/', postsValidation, async (req, res, next) => {
-	// try {
-	// 	const newBlogPost = {
-	// 		...req.body,
-	// 		_id: uniqid(),
+postsRouter.post(
+	'/',
+	multer().array('profilepic'),
+	postsValidation,
+	async (req, res, next) => {
+		// try {
+		// 	const newBlogPost = {
+		// 		...req.body,
+		// 		_id: uniqid(),
 
-	// 		createdAt: new Date(),
-	// 	};
-	// 	const posts = getBlogPosts();
-	// 	console.log(posts);
-	// 	posts.push(newBlogPost);
-	// 	writeBlogPosts(posts);
-	// 	res.status(201).send({ id: newBlogPost._id });
-	// } catch (error) {
-	// 	next(error);
-	// }
-	try {
-		const errors = validationResult(req);
-		if (!errors.isEmpty()) {
-			next(createHttpError(400, `bad request`));
-		} else {
-			const newBlogPost = {
-				...req.body,
-				_id: uniqid(),
-
-				createdAt: new Date(),
-			};
-			const posts = await getBlogPosts();
-			console.log(posts);
-			posts.push(newBlogPost);
-			await writeBlogPosts(posts);
-			res.status(201).send({ id: newBlogPost._id });
+		// 		createdAt: new Date(),
+		// 	};
+		// 	const posts = getBlogPosts();
+		// 	console.log(posts);
+		// 	posts.push(newBlogPost);
+		// 	writeBlogPosts(posts);
+		// 	res.status(201).send({ id: newBlogPost._id });
+		// } catch (error) {
+		// 	next(error);
+		// }
+		try {
+			const errors = validationResult(req);
+			if (!errors.isEmpty()) {
+				next(createHttpError(400, `bad request`));
+			} else {
+				const { title, category, content } = req.body;
+				let filesCollection = [];
+				// console.log(posts[index]);
+				req.files.map((file) => {
+					// console.log(file);
+					return filesCollection.push(file);
+				});
+				const newBlogPost = {
+					title,
+					category,
+					content,
+					comments: [],
+					readTime: {},
+					_id: uniqid(),
+					cover:
+						filesCollection &&
+						`http://localhost:3002/img/posts/${filesCollection[0]?.originalname}`,
+					author: {
+						name: '',
+						avatar:
+							filesCollection &&
+							`http://localhost:3002/img/posts/${filesCollection[0]?.originalname}`,
+					},
+					createdAt: new Date(),
+				};
+				const posts = await getBlogPosts();
+				console.log(posts);
+				posts.push(newBlogPost);
+				await writeBlogPosts(posts);
+				res.status(201).send({ id: newBlogPost._id });
+			}
+		} catch (error) {
+			next(error);
 		}
-	} catch (error) {
-		next(error);
-	}
-});
+	},
+);
 postsRouter.post(
 	'/:id/uploadAvatar',
 	multer().single('profilepic'),
@@ -95,7 +119,7 @@ postsRouter.post(
 			posts[
 				index
 			].author.avatar = `http://localhost:3002/img/posts/${req.file.originalname}`;
-
+			console.log(posts[index]);
 			await writeBlogPosts(posts);
 			res.send(posts[index]);
 			res.send('ok');
@@ -120,27 +144,51 @@ postsRouter.post('/:id/comments', async (req, res, next) => {
 	}
 });
 //////////////////////put
-postsRouter.put('/:id', async (req, res, next) => {
-	console.log(req.params.id);
-	const posts = await getBlogPosts();
-	const index = posts.findIndex((p) => p._id === req.params.id);
-	console.log(index);
-	try {
-		if (parseInt(index) !== -1) {
-			console.log(posts[index]);
-			const updatedpost = { ...posts[index], ...req.body };
-			posts[index] = updatedpost;
-			await writeBlogPosts(posts);
-			res.send(updatedpost);
-		} else {
-			next(
-				createHttpError(404, `bad request with ${req.params.id} , not found`),
-			);
+postsRouter.put(
+	'/:id',
+	multer().array('profilepic'),
+	postsValidation,
+	async (req, res, next) => {
+		console.log(req.params.id);
+		const posts = await getBlogPosts();
+		const index = posts.findIndex((p) => p._id === req.params.id);
+		// console.log(index);
+		try {
+			if (parseInt(index) !== -1) {
+				let filesCollection = [];
+				// console.log(posts[index]);
+				req.files.map((file) => {
+					savepostpicture(file.originalname, file.buffer);
+					return filesCollection.push(file);
+				});
+				// 	const arrayOfPromises = req.files.map((file) =>
+				// 		savepostpicture(file.originalname, file.buffer),
+				// 	);
+				// let mydata = await Promise.all(arrayOfPromises);
+				console.log(filesCollection);
+				if (filesCollection) {
+					posts[
+						index
+					].cover = `http://localhost:3002/img/posts/${filesCollection[0]?.originalname}`;
+					posts[
+						index
+					].author.avatar = `http://localhost:3002/img/posts/${filesCollection[1]?.originalname}`;
+					await writeBlogPosts(posts);
+					const updatedpost = { ...posts[index], ...req.body };
+					posts[index] = updatedpost;
+					await writeBlogPosts(posts);
+					res.send(updatedpost);
+				}
+			} else {
+				next(
+					createHttpError(404, `bad request with ${req.params.id} , not found`),
+				);
+			}
+		} catch (error) {
+			next(error);
 		}
-	} catch (error) {
-		next(error);
-	}
-});
+	},
+);
 
 //////////////////// get
 postsRouter.get('/', async (req, res, next) => {
