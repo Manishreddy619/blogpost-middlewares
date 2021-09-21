@@ -15,10 +15,13 @@ const port = process.env.PORT || 3002;
 const whitelist = [process.env.FE_DEV_URL, process.env.FE_PROD_URL];
 const corsOpts = {
 	origin: function (origin, next) {
+		console.log('CURRENT ORIGIN: ', origin);
 		if (!origin || whitelist.indexOf(origin) !== -1) {
+			// if received origin is in the whitelist we are going to allow that request
 			next(null, true);
 		} else {
-			next(new Error(`origin ${origin} not allowed`));
+			// if it is not, we are going to reject that request
+			next(new Error(`Origin ${origin} not allowed!`));
 		}
 	},
 };
