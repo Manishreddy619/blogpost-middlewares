@@ -10,7 +10,7 @@ import {
 } from './errorhandlers.js';
 import { join } from 'path';
 const server = express();
-const port = process.enev.PORT || 3002;
+const port = process.env.PORT || 3002;
 
 const whitelist = [process.env.FE_DEV_URL, process.env.FE_PROD_URL];
 const corsOpts = {
