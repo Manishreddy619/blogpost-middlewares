@@ -6,7 +6,7 @@
 		"readTime": { "value": 2, "unit": "minute" },
 		"author": {
 			"name": "AUTHOR AVATAR NAME",
-			"avatar": "http://localhost:3002/img/posts/haha.jpg"
+			"avatar": "http://localhost:3002/img/posts/156-1563094_big.png"
 		},
 		"content": "Life is fragile and temporary. The faces of today quickly become the faces of the past. Sorrow, paiand angerit all fadesexcept love. Love is forever and there after, even when we've fallen to our graves.",
 		"comments": [],
@@ -16,7 +16,7 @@
 	{
 		"category": "schoool",
 		"title": "kid",
-		"cover": "http://localhost:3002/img/posts/haha.jpg",
+		"cover": "https://res.cloudinary.com/dytffimtv/image/upload/v1632331362/ycjafzxcavuiq7opxpgo.jpg",
 		"readTime": { "value": 2, "unit": "minute" },
 		"author": {
 			"name": "AUTHOR AVATAR NAME",
@@ -26,7 +26,9 @@
 		"comments": [],
 		"_id": "5psj8jcktr0nr2i",
 		"createdAt": "2021-09-19T09:27:44.585Z",
-		"description": "testing..........."
+		"description": "testing...........",
+		"updatedAt": "2021-09-22T17:22:41.341Z",
+		"id": "5psj8jcktr0nr2i"
 	},
 	{
 		"title": "At the age of 18, I made up my mind to never have another bad day in my life. I dove into a endless sea of gratitude from which I've never emerged.",

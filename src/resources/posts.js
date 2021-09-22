@@ -10,7 +10,9 @@ import { validationResult } from 'express-validator';
 import { postsValidation } from './validation.js';
 import multer from 'multer';
 import fs from 'fs-extra';
-import getPdfReadableStream from './pdf.js';
+import { getPdfReadableStream } from './pdf.js';
+import { parseFile } from './upload.js';
+
 const postsRouter = express.Router();
 
 const { readJSON, writeJSON, writeFile } = fs;
@@ -89,21 +91,33 @@ postsRouter.post(
 );
 postsRouter.post(
 	'/:id/uploadAvatar',
-	multer().single('profilepic'),
+	parseFile.single('profilepic'),
 	async (req, res, next) => {
 		try {
 			const posts = await getBlogPosts();
 			const index = posts.findIndex((p) => p._id === req.params.id);
-			console.log(posts[index].cover);
+			console.log(req.file.path);
+			if (index !== -1) {
+				console.log(index);
+				// console.log(posts);
+				// await savepostpicture(req.file.originalname, req.file.buffer);
+				console.log(posts[index].cover);
+				const previousblogData = posts[index];
+				const changedblog = {
+					...previousblogData,
+					cover: req.file.path,
+					updatedAt: new Date(),
+					id: req.params.id,
+				};
 
-			await savepostpicture(req.file.originalname, req.file.buffer);
-			posts[
-				index
-			].cover = `http://localhost:3002/img/posts/${req.file.originalname}`;
-
-			await writeBlogPosts(posts);
-			res.send(posts[index]);
-			res.send('ok');
+				posts[index] = changedblog;
+				console.log(posts[index]);
+				await writeBlogPosts(posts);
+				res.send(posts[index]);
+			}
+			res
+				.status(404)
+				.send({ message: `blog with ${req.params.id} is not found!` });
 		} catch (error) {
 			next(console.error());
 		}
@@ -274,10 +288,21 @@ postsRouter.get('/JSONData/data', async (req, res, next) => {
 		next(error);
 	}
 });
-postsRouter.get('/pdfdownload/data', async (req, res, next) => {
+postsRouter.get('/:id/pdfdownload/data', async (req, res, next) => {
 	try {
-		res.setHeader('Content-Disposition', `attachment; filename = json.pdf`);
-		const source = getPdfReadableStream({ data: await getBlogPosts() });
+		const posts = await getBlogPosts();
+		const filteredPost = posts.find((post) => post._id === req.params.id);
+		console.log(filteredPost);
+		if (!filteredPost) {
+			res
+				.status(404)
+				.send({ message: `blog with ${req.params.id} is not found!` });
+		}
+		res.setHeader(
+			'Content-Disposition',
+			`attachment; filename = application.pdf`,
+		);
+		const source = await getPdfReadableStream(filteredPost);
 		const destination = res;
 		pipeline(source, destination, (err) => {
 			if (err) next(err);
