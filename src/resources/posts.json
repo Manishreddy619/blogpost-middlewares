@@ -1,1 +1,44 @@
-[{"category":"ARTICLE CATEGORY","title":"ARTICLE TITLE","cover":"http://localhost:3002/img/posts/alvaro-morte-1-770x433.jpg","readTime":{"value":2,"unit":"minute"},"author":{"name":"AUTHOR AVATAR NAME","avatar":"http://localhost:3002/img/posts/haha.jpg"},"content":"hello","comments":[],"_id":"5psj3coktqzm3cg","createdAt":"2021-09-19T08:58:27.568Z"},{"category":"schoool","title":"kid","cover":"http://localhost:3002/img/posts/haha.jpg","readTime":{"value":2,"unit":"minute"},"author":{"name":"AUTHOR AVATAR NAME","avatar":"http://localhost:3002/img/posts/1527666971_331498_noticia_normal.jpg"},"content":"hello","comments":[],"_id":"5psj8jcktr0nr2i","createdAt":"2021-09-19T09:27:44.585Z","description":"testing..........."},{"title":"messi","category":"football","content":"greatestever","comments":[],"_id":"5psj7l0kts98q2s","cover":"http://localhost:3002/img/posts/0b4564b5b699abee656e455bcf1ef377.jpg","author":{"name":"","avatar":"http://localhost:3002/img/posts/0b4564b5b699abee656e455bcf1ef377.jpg"},"createdAt":"2021-09-20T06:15:46.179Z"}]
+[
+	{
+		"category": "ARTICLE CATEGORY",
+		"title": "ARTICLE TITLE",
+		"cover": "http://localhost:3002/img/posts/alvaro-morte-1-770x433.jpg",
+		"readTime": { "value": 2, "unit": "minute" },
+		"author": {
+			"name": "AUTHOR AVATAR NAME",
+			"avatar": "http://localhost:3002/img/posts/haha.jpg"
+		},
+		"content": "Life is fragile and temporary. The faces of today quickly become the faces of the past. Sorrow, paiand angerit all fadesexcept love. Love is forever and there after, even when we've fallen to our graves.",
+		"comments": [],
+		"_id": "5psj3coktqzm3cg",
+		"createdAt": "2021-09-19T08:58:27.568Z"
+	},
+	{
+		"category": "schoool",
+		"title": "kid",
+		"cover": "http://localhost:3002/img/posts/haha.jpg",
+		"readTime": { "value": 2, "unit": "minute" },
+		"author": {
+			"name": "AUTHOR AVATAR NAME",
+			"avatar": "http://localhost:3002/img/posts/1527666971_331498_noticia_normal.jpg"
+		},
+		"content": "The most important thing to remember is this: to be ready at any moment to give up what you are for what you might become.",
+		"comments": [],
+		"_id": "5psj8jcktr0nr2i",
+		"createdAt": "2021-09-19T09:27:44.585Z",
+		"description": "testing..........."
+	},
+	{
+		"title": "At the age of 18, I made up my mind to never have another bad day in my life. I dove into a endless sea of gratitude from which I've never emerged.",
+		"category": "football",
+		"content": "greatestever",
+		"comments": [],
+		"_id": "5psj7l0kts98q2s",
+		"cover": "http://localhost:3002/img/posts/0b4564b5b699abee656e455bcf1ef377.jpg",
+		"author": {
+			"name": "",
+			"avatar": "http://localhost:3002/img/posts/0b4564b5b699abee656e455bcf1ef377.jpg"
+		},
+		"createdAt": "2021-09-20T06:15:46.179Z"
+	}
+]

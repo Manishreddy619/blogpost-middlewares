@@ -2,13 +2,15 @@ import express, { json } from 'express';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import { dirname, join } from 'path';
-
+import { pipeline } from 'stream';
+import { createGzip } from 'zlib';
 import uniqid from 'uniqid';
 import createHttpError from 'http-errors';
 import { validationResult } from 'express-validator';
 import { postsValidation } from './validation.js';
 import multer from 'multer';
 import fs from 'fs-extra';
+import getPdfReadableStream from './pdf.js';
 const postsRouter = express.Router();
 
 const { readJSON, writeJSON, writeFile } = fs;
@@ -17,9 +19,10 @@ const postjsonpath = path.join(
 	'posts.json',
 );
 const publicFolderPath = join(process.cwd(), './public/img/posts');
-const getBlogPosts = () => readJSON(postjsonpath);
+export const getBlogPosts = () => readJSON(postjsonpath);
 const writeBlogPosts = (content) => writeJSON(postjsonpath, content);
 
+export const getPostReadbleStream = () => fs.createReadStream(postjsonpath);
 const savepostpicture = (name, contentasbuffer) =>
 	writeFile(join(publicFolderPath, name), contentasbuffer);
 ///////////////////post blog posts
@@ -194,6 +197,7 @@ postsRouter.put(
 postsRouter.get('/', async (req, res, next) => {
 	try {
 		const posts = await getBlogPosts();
+		console.log(posts);
 		res.status(200).send(posts);
 	} catch (error) {
 		next(error);
@@ -254,4 +258,41 @@ postsRouter.delete('/:id', async (req, res, next) => {
 		next(error);
 	}
 });
+postsRouter.get('/JSONData/data', async (req, res, next) => {
+	try {
+		// souce
+		res.setHeader('content-Disposition', `attachment; filename=posts.json.gz`);
+		const source = getPostReadbleStream();
+		const transform = createGzip();
+		const destination = res;
+		// destinaton
+
+		pipeline(source, transform, destination, (err) => {
+			if (err) next(err);
+		});
+	} catch (error) {
+		next(error);
+	}
+});
+postsRouter.get('/pdfdownload/data', async (req, res, next) => {
+	try {
+		res.setHeader('Content-Disposition', `attachment; filename = json.pdf`);
+		const source = getPdfReadableStream({ data: await getBlogPosts() });
+		const destination = res;
+		pipeline(source, destination, (err) => {
+			if (err) next(err);
+		});
+	} catch (error) {
+		next(error);
+	}
+});
+// souce
+// res.setHeader('content-Disposition', `attachment; filename=posts.json`);
+// const source = getPostReadbleStream();
+// const destination = fs.createWriteStream('copy.json');
+// // destinaton
+
+// pipeline(source, destination, (err) => {
+// 	if (err) next(err);
+// });
 export default postsRouter;
