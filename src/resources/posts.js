@@ -12,7 +12,7 @@ import multer from 'multer';
 import fs from 'fs-extra';
 import { getPdfReadableStream } from './pdf.js';
 import { parseFile } from './upload.js';
-
+import json2csv from 'json2csv';
 import { sendEmail } from './generateEmail.js';
 const postsRouter = express.Router();
 
@@ -21,10 +21,15 @@ const postjsonpath = path.join(
 	dirname(fileURLToPath(import.meta.url)),
 	'posts.json',
 );
+const authorJSON = path.join(
+	dirname(fileURLToPath(import.meta.url)),
+	'authors.json',
+);
 const publicFolderPath = join(process.cwd(), './public/img/posts');
 export const getBlogPosts = () => readJSON(postjsonpath);
-const writeBlogPosts = (content) => writeJSON(postjsonpath, content);
 
+const writeBlogPosts = (content) => writeJSON(postjsonpath, content);
+export const getauthorsReadableStream = () => fs.createReadStream(authorJSON);
 export const getPostReadbleStream = () => fs.createReadStream(postjsonpath);
 const savepostpicture = (name, contentasbuffer) =>
 	writeFile(join(publicFolderPath, name), contentasbuffer);
@@ -313,13 +318,22 @@ postsRouter.get('/:id/pdfdownload/data', async (req, res, next) => {
 		next(error);
 	}
 });
-// souce
-// res.setHeader('content-Disposition', `attachment; filename=posts.json`);
-// const source = getPostReadbleStream();
-// const destination = fs.createWriteStream('copy.json');
-// // destinaton
+postsRouter.get('/data/CSVdownload', async (req, res, next) => {
+	try {
+		res.setHeader('Content-disposition', `attachment; filename =authors.csv`);
+		const source = getauthorsReadableStream();
+		const transform = new json2csv.Transform({
+			fields: ['author', 'title', 'country', 'pages', 'year'],
+		});
+		const destination = res;
+		// // destinaton
 
-// pipeline(source, destination, (err) => {
-// 	if (err) next(err);
-// });
+		pipeline(source, transform, destination, (err) => {
+			if (err) next(err);
+		});
+	} catch (error) {
+		next(error);
+	}
+});
+
 export default postsRouter;
