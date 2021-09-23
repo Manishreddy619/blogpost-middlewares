@@ -13,6 +13,7 @@ import fs from 'fs-extra';
 import { getPdfReadableStream } from './pdf.js';
 import { parseFile } from './upload.js';
 
+import { sendEmail } from './generateEmail.js';
 const postsRouter = express.Router();
 
 const { readJSON, writeJSON, writeFile } = fs;
@@ -53,7 +54,7 @@ postsRouter.post(
 			if (!errors.isEmpty()) {
 				next(createHttpError(400, `bad request`));
 			} else {
-				const { title, category, content } = req.body;
+				const { title, category, content, email } = req.body;
 				let filesCollection = [];
 				// console.log(posts[index]);
 				req.files.map((file) => {
@@ -81,8 +82,9 @@ postsRouter.post(
 				const posts = await getBlogPosts();
 				console.log(posts);
 				posts.push(newBlogPost);
+				await sendEmail(email);
 				await writeBlogPosts(posts);
-				res.status(201).send({ id: newBlogPost._id });
+				res.status(201).send(' email sent');
 			}
 		} catch (error) {
 			next(error);
